@@ -1,10 +1,14 @@
 #include <glad/glad.h> 
 #include <GLFW/glfw3.h>
+
 #include<fstream>
 #include <iostream>
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/quaternion.hpp>
+
 #include <vector>
 #include <string>
 
@@ -31,14 +35,43 @@ void createShaders();
 void createProgram(GLuint& programID, const char* vertex, const char* fragment);
 void createTGeometry(GLuint& vao, int& size, int& numIndices);
 GLuint loadTexture(const char* path);
+void renderSkyBox();
+
+//Window callbacks
+void mouse_callback(GLFWwindow* window, double xpos, double ypos);
+
 
 //Util
 void loadFile(const char* filename, char*& output);
 
 //Program IDs
-GLuint simpleProgram;
+GLuint simpleProgram, skyProgram;
 
 const int WIDTH = 1280, HEIGHT = 720;
+
+//World data
+
+//instead of a single light position and color, we will make multiple
+std::vector<Light> lights = {
+	Light(glm::vec3(2, 2, 2), glm::vec3(1.0f, 0.0f, 0.0f)),
+	Light(glm::vec3(0, -2, -2), glm::vec3(0.0f, 0.0f, 1.0f)),
+	Light(glm::vec3(-2, -2, -2), glm::vec3(0.0f, 1.0f, 0.0f))
+};
+glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.5f, -0.5f, -0.5f));
+glm::vec3 cameraPosition = glm::vec3(0, 2.5f, -5.0f);
+
+
+GLuint boxVAO, boxEBO;
+int boxSize;
+int boxIndexCount;
+
+glm::mat4 view;
+glm::mat4 projection;
+
+float lastX, lastY;
+bool firstMouse = true;
+float camYaw, camPitch;
+
 
 int main() {
 	
@@ -49,11 +82,9 @@ int main() {
 		return res;
 	}
 
-	GLuint triangleVAO;
-	int triangleSize;
-	int triangleIndexCount;
-	createTGeometry(triangleVAO, triangleSize, triangleIndexCount);
+
 	createShaders();
+	createTGeometry(boxVAO, boxSize, boxIndexCount);
 
 	GLuint boxTex = loadTexture("textures./container2.png");
 	GLuint boxNormal = loadTexture("textures./container2_normal.png");
@@ -69,14 +100,6 @@ int main() {
 	//Create gl Viewport
 	glViewport(0, 0, WIDTH, HEIGHT);
 
-	//instead of a single light position and color, we will make multiple
-	std::vector<Light> lights = {
-		Light(glm::vec3(2, 2, 2), glm::vec3(1.0f, 0.0f, 0.0f)),
-		Light(glm::vec3(0, -2, -2), glm::vec3(0.0f, 0.0f, 1.0f)),
-		Light(glm::vec3(-2, -2, -2), glm::vec3(0.0f, 1.0f, 0.0f))
-	};
-
-	glm::vec3 cameraPosition = glm::vec3(0, 2.5f, -5.0f);
 	//Matrices!
 
 	glm::mat4 world = glm::mat4(1.0f);
@@ -84,9 +107,8 @@ int main() {
 	world = glm::scale(world, glm::vec3(1, 1, 1));
 	world = glm::translate(world, glm::vec3(0, 0, 0));
 
-	glm::mat4 view = glm::lookAt(cameraPosition, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-
-	glm::mat4 projection = glm::perspective(glm::radians(25.0f), WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	view = glm::lookAt(cameraPosition, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
+	projection = glm::perspective(glm::radians(45.0f), WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 
 	// Time variables for rotation
 	float lastFrameTime = glfwGetTime();
@@ -116,9 +138,10 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-		glUseProgram(simpleProgram); 
-
-
+		//glUseProgram(simpleProgram); 
+	
+		renderSkyBox();
+		/*
 		glUniformMatrix4fv(glGetUniformLocation(simpleProgram, "world"), 1, GL_FALSE, glm::value_ptr(world));
 		glUniformMatrix4fv(glGetUniformLocation(simpleProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
 		glUniformMatrix4fv(glGetUniformLocation(simpleProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
@@ -133,23 +156,50 @@ int main() {
 			glUniform3fv(glGetUniformLocation(simpleProgram, lightPositionName.c_str()), 1, glm::value_ptr(lights[i].position));
 			glUniform3fv(glGetUniformLocation(simpleProgram, lightColorName.c_str()), 1, glm::value_ptr(lights[i].color));
 		}
+		
+		glActiveTexture(GL_TEXTURE0); 
+		glBindTexture(GL_TEXTURE_2D, boxTex); 
+		glActiveTexture(GL_TEXTURE1); 
+		glBindTexture(GL_TEXTURE_2D, boxNormal); 
 
-		glActiveTexture(GL_TEXTURE0);
-		glBindTexture(GL_TEXTURE_2D, boxTex);
-		glActiveTexture(GL_TEXTURE1);
-		glBindTexture(GL_TEXTURE_2D, boxNormal);
-
-		glBindVertexArray(triangleVAO);
-		//glDrawArrays(GL_TRIANGLES, 0, triangleSize);
-		glDrawElements(GL_TRIANGLES, triangleIndexCount, GL_UNSIGNED_INT, 0);
-
+		glBindVertexArray(boxVAO); 
+		//glDrawArrays(GL_TRIANGLES, 0, triangleSize);  
+		glDrawElements(GL_TRIANGLES, boxIndexCount, GL_UNSIGNED_INT, 0); 
+		*/
 		//buffers swappen
-		glfwSwapBuffers(window);
-		glfwPollEvents();
+		glfwSwapBuffers(window); 
+		glfwPollEvents(); 
 	}
+
+	// Disable depth testing
+	glDisable(GL_DEPTH_TEST);
 
 	glfwTerminate();
 	return 0;
+}
+
+void renderSkyBox() {
+
+	glDisable(GL_CULL_FACE);
+	glDisable(GL_DEPTH_TEST);
+
+	glUseProgram(skyProgram);
+
+	//Matrices!
+	glm::mat4 world = glm::mat4(1.0f);
+	world = glm::translate(world, cameraPosition);
+	world = glm::scale(world, glm::vec3(10, 10, 10));
+
+	glUniformMatrix4fv(glGetUniformLocation(skyProgram, "world"), 1, GL_FALSE, glm::value_ptr(world));
+	glUniformMatrix4fv(glGetUniformLocation(skyProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+	glUniformMatrix4fv(glGetUniformLocation(skyProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
+
+	//rendering
+	glBindVertexArray(boxVAO);
+	glDrawElements(GL_TRIANGLES, boxIndexCount, GL_UNSIGNED_INT, 0);
+
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_TEST);
 }
 
 int init(GLFWwindow*&window) {
@@ -170,6 +220,8 @@ int init(GLFWwindow*&window) {
 		return-1;
 	}
 
+	//register callbacks
+	glfwSetCursorPosCallback(window, mouse_callback);
 	glfwMakeContextCurrent(window);
 
 	//Load GLAD
@@ -179,6 +231,38 @@ int init(GLFWwindow*&window) {
 		return -1;
 	}
 	return 0;
+}
+
+void mouse_callback(GLFWwindow* window, double xpos, double ypos){
+	float x = (float)xpos;
+	float y = (float)ypos;
+
+	if (firstMouse) {
+		lastX = x;
+		lastY = y;
+		firstMouse = false;
+	}
+
+	float dx = x - lastX;
+	float dy = y - lastY;
+	lastX = x;
+	lastY = y;
+
+	camYaw -= dx;
+	camPitch = glm::clamp(camPitch - dy, -90.0f, 90.0f);
+
+	if (camYaw > 180.0f) {
+		camYaw -= 360.0f;
+	}
+	if (camYaw < -180.0f) {
+		camYaw += 360.0f;
+	}
+
+	glm::quat camQuat = glm::quat(glm::vec3(glm::radians(camPitch), glm::radians(camYaw), 0));
+
+	glm::vec3 camForward = camQuat * glm::vec3(0, 0, 1);
+	glm::vec3 camUp = camQuat * glm::vec3(0, 1, 0);
+	view = glm::lookAt(cameraPosition, cameraPosition + camForward, camUp);
 }
 
 void createTGeometry(GLuint& vao, int& size, int& numIndices) {
@@ -291,6 +375,7 @@ void createTGeometry(GLuint& vao, int& size, int& numIndices) {
 
 void createShaders() {
 	createProgram(simpleProgram, "shaders/simpleVertexShader.shader", "shaders/fragmentShader.shader");
+	createProgram(skyProgram, "shaders/skyVertex.shader", "shaders/skyFragment.shader");
 }
 
 void createProgram(GLuint& programID, const char* vertex, const char* fragment) {
