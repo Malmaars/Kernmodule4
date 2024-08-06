@@ -1,7 +1,7 @@
 #version 330 core
 out vec4 FragColor;
 
-in vec3 worldPosition;
+in vec4 worldPosition;
 
 uniform vec3 lightDirection;
 uniform vec3 cameraPosition;
@@ -18,10 +18,10 @@ void main()
 	vec3 sunColor = vec3(1.0, 200 / 255.0, 50 / 255.0);
 
 	//calculate view
-	vec3 viewDir = normalize(worldPosition - cameraPosition);
+	vec3 viewDir = normalize(worldPosition.rgb - cameraPosition);
 	float sun = max(pow(dot(-viewDir, lightDirection), 128), 0.0);
 		
-	FragColor = vec4(lerp(botColor, topColor, abs(viewDir.y)) + sun * sunColor, 1);
+	FragColor = vec4(lerp(botColor, topColor, max(viewDir.y, 0.0)) + sun * sunColor, 1);
 
 }
 

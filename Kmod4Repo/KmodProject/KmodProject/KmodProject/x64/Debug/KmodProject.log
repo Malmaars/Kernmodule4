@@ -1,5 +1,6 @@
 ﻿  main.cpp
-C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\KmodProject\main.cpp(114,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\KmodProject\main.cpp(121,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
-C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\KmodProject\main.cpp(438,14): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
+C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\KmodProject\main.cpp(130,22): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\KmodProject\main.cpp(139,26): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\KmodProject\main.cpp(220,10): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\KmodProject\main.cpp(643,14): warning C4244: 'initializing': conversion from 'std::streamoff' to 'int', possible loss of data
   KmodProject.vcxproj -> C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\KmodProject\KmodProject\x64\Debug\KmodProject.exe
