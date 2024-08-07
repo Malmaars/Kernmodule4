@@ -62,7 +62,6 @@ void main()
 	vec3 rockColor = lerp(rockColorClose, rockColorFar, uvLerp);
 	vec3 snowColor = lerp(snowColorClose, snowColorFar, uvLerp);
 
-
 	vec3 diffuse = lerp(lerp(lerp(lerp(dirtColor, sandColor, ds), grassColor, sg), rockColor, gr), snowColor, rs);
 
 	float fog = pow(clamp((dist - 250) / 1000, 0, 1), 2);

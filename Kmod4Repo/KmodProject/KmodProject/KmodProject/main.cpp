@@ -93,12 +93,11 @@ int main() {
 		return res;
 	}
 
-
 	createShaders();
 	createTGeometry(boxVAO, boxSize, boxIndexCount);
 
-	terrainVAO = GeneratePlane("textures/heightMap2.png", heightmapTexture, GL_RGBA, 4, 100.0f, 5.0f, terrainIndexCount, heightmapID);
-	heightNormalID = loadTexture("textures/heightNormal2.png");
+	terrainVAO = GeneratePlane("textures/heightMap2.png", heightmapTexture, GL_RGBA, 4, 250.0f, 5.0f, terrainIndexCount, heightmapID);
+	heightNormalID = loadTexture("textures/heightnormal.png");
 
 	GLuint boxTex = loadTexture("textures./container2.png");
 	GLuint boxNormal = loadTexture("textures./container2_normal.png");
