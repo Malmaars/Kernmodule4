@@ -12,8 +12,12 @@
 #include <vector>
 #include <string>
 
+#include "model.h"
+
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+
+
 
 
 struct Light {
@@ -84,6 +88,8 @@ unsigned char* heightmapTexture;
 
 GLuint dirt, sand, grass, rock, snow;
 
+Model* boat;
+
 int main() {
 	
 	GLFWwindow* window;
@@ -97,8 +103,8 @@ int main() {
 	createShaders();
 	createTGeometry(boxVAO, boxSize, boxIndexCount);
 
-	terrainVAO = GeneratePlane("textures/heightMap2.png", heightmapTexture, GL_RGBA, 4, 100.0f, 5.0f, terrainIndexCount, heightmapID);
-	heightNormalID = loadTexture("textures/heightNormal2.png");
+	terrainVAO = GeneratePlane("textures/heightmap2.png", heightmapTexture, GL_RGBA, 4, 100.0f, 5.0f, terrainIndexCount, heightmapID);
+	heightNormalID = loadTexture("textures/heightnormal.png");
 
 	GLuint boxTex = loadTexture("textures./container2.png");
 	GLuint boxNormal = loadTexture("textures./container2_normal.png");
@@ -108,6 +114,8 @@ int main() {
 	grass = loadTexture("textures/grass.png", 4);
 	rock = loadTexture("textures/rock.jpg");
 	snow = loadTexture("textures/snow.jpg");
+
+	boat = new Model("models/Fisherboat.obj");
 
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);

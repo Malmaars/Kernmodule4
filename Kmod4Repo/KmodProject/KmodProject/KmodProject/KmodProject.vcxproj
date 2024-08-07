@@ -72,23 +72,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\include</IncludePath>
     <LibraryPath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\include;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\include</IncludePath>
     <LibraryPath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <LibraryPath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\lib\Debug;$(LibraryPath)</LibraryPath>
-    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\include</IncludePath>
+    <LibraryPath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\lib\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\include</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\include</IncludePath>
-    <LibraryPath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kmod4Repo\lib\Release;$(LibraryPath)</LibraryPath>
+    <IncludePath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\include</IncludePath>
+    <LibraryPath>C:\Users\simon\Documents\HKU\Jaar 2\Kernmodule4\Kernmodule4\Kmod4Repo\lib\Release;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -96,6 +96,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -111,6 +113,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -126,6 +130,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -141,6 +147,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -163,6 +171,8 @@
     <None Include="shaders\terrainVertex.shader" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="mesh.h" />
+    <ClInclude Include="model.h" />
     <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
