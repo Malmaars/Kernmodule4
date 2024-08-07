@@ -44,6 +44,12 @@
     <None Include="shaders\terrainFragment.shader">
       <Filter>Resource Files\shaders</Filter>
     </None>
+    <None Include="shaders\model.fs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
+    <None Include="shaders\model.vs">
+      <Filter>Resource Files\shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stb_image.h">
