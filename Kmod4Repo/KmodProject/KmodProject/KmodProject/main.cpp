@@ -97,17 +97,17 @@ int main() {
 	createShaders();
 	createTGeometry(boxVAO, boxSize, boxIndexCount);
 
-	terrainVAO = GeneratePlane("textures/heightmap.png", heightmapTexture, GL_RGBA, 4, 100.0f, 5.0f, terrainIndexCount, heightmapID);
-	heightNormalID = loadTexture("textures/heightnormal.png");
+	terrainVAO = GeneratePlane("textures/heightMap2.png", heightmapTexture, GL_RGBA, 4, 100.0f, 5.0f, terrainIndexCount, heightmapID);
+	heightNormalID = loadTexture("textures/heightNormal2.png");
 
 	GLuint boxTex = loadTexture("textures./container2.png");
 	GLuint boxNormal = loadTexture("textures./container2_normal.png");
 
-	dirt = loadTexture("texturs/dirt.jpg");
-	sand = loadTexture("texturs/sand.jpg");
-	grass = loadTexture("texturs/grass.jpg", 4);
-	rock = loadTexture("texturs/rock.jpg");
-	snow = loadTexture("texturs/snow.jpg");
+	dirt = loadTexture("textures/dirt.jpg");
+	sand = loadTexture("textures/sand.jpg");
+	grass = loadTexture("textures/grass.png", 4);
+	rock = loadTexture("textures/rock.jpg");
+	snow = loadTexture("textures/snow.jpg");
 
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
@@ -259,7 +259,6 @@ unsigned int GeneratePlane(const char* heightmap, unsigned char* &data, GLenum f
 			glBindTexture(GL_TEXTURE_2D, 0);
 		}
 	}
-
 	int stride = 8;
 	float* vertices = new float[(width * height) * stride];
 	unsigned int* indices = new unsigned int[(width - 1) * (height - 1) * 6];
