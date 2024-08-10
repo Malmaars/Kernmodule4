@@ -9,14 +9,12 @@ in vec3 worldPosition;
 uniform sampler2D mainTex;
 uniform sampler2D normalTex;
 
-struct Light{
-	vec3 position;
-	vec3 color;
-	};
-
+uniform vec3 lightDirection;
 uniform vec3 cameraPosition;
 
-uniform Light lights[3];
+vec3 lerp(vec3 a, vec3 b, float t){
+	return a + (b - a) * t;
+	}
 
 void main()
 {	//Normal map
@@ -26,40 +24,27 @@ void main()
 	//transform with tbn
 	normal = tbn * normal;
 
+    float lightValue = max(-dot(normal, lightDirection), 0.0);
+
 	//specular data
 	vec3 viewDir = normalize(worldPosition - cameraPosition);
 
+	float dist = length(worldPosition.xyz - cameraPosition);
+	float uvLerp = clamp((dist - 250) / 25, -1, 1) * 0.5 + 0.5;
     // Texture color
     vec4 texColor = texture(mainTex, uv);
     vec3 fragColor = texColor.rgb * color;
 
-    vec3 totalLight = vec3(0.0);
+    float fog = pow(clamp((dist - 250) / 1000, 0, 1), 2);
 
-    for(int i = 0; i < 3; i++)
-    {
-        // Correct light direction calculation
-        vec3 lightDir = normalize(lights[i].position - worldPosition);
-        vec3 reflDir = reflect(-lightDir, normal);
+	vec3 topColor = vec3(68.0 / 255.0, 118.0 / 255.0, 189.0/ 255.0);
+	vec3 botColor = vec3(188.0 / 255.0, 214.0 / 255.0, 231.0/ 255.0);
+	
+	vec3 fogColor = lerp(botColor, topColor, max(viewDir.y, 0.0));
 
-        // Diffuse shading
-        float diff = max(dot(normal, lightDir), 0.0);
+	vec4 fragOutput = vec4(lerp(fragColor * min(lightValue + 0.1, 1.0), fogColor, fog), 0.75);
 
-        // Specular shading
-        float spec = 0.0;
-        if (diff > 0.0) {
-            spec = pow(max(dot(viewDir, reflDir), 0.0), 8);
-        }
-
-        // Accumulate light contributions
-        vec3 diffuse = diff * lights[i].color;
-        vec3 specular = spec * lights[i].color;
-
-        totalLight += diffuse + specular;
-    }
-
-    fragColor = fragColor * totalLight * 2;
-
-    FragColor = vec4(fragColor, texColor.a);
+	FragColor = fragOutput;
 
 }
 

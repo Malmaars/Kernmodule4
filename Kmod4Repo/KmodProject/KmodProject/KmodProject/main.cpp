@@ -40,6 +40,7 @@ void createShaders();
 void createProgram(GLuint& programID, const char* vertex, const char* fragment);
 void createTGeometry(GLuint& vao, int& size, int& numIndices);
 GLuint loadTexture(const char* path, int comp = 0);
+void renderBox(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
 void renderSkyBox();
 void renderTerrain();
 void renderModel(Model* model, glm::vec3 pos, glm::vec3 rot, glm::vec3 scale);
@@ -68,9 +69,9 @@ std::vector<Light> lights = {
 	Light(glm::vec3(-2, -2, -2), glm::vec3(0.0f, 1.0f, 0.0f))
 };
 glm::vec3 lightDirection = glm::normalize(glm::vec3(-0.5f, -0.5f, -0.5f));
-glm::vec3 cameraPosition = glm::vec3(100.0f, 125.5f, 100.0f);
+glm::vec3 cameraPosition = glm::vec3(50.0f, 20.0f, -100.0f);
 
-
+GLuint boxTex, boxNormal;
 GLuint boxVAO, boxEBO;
 int boxSize;
 int boxIndexCount;
@@ -90,6 +91,10 @@ unsigned char* heightmapTexture;
 GLuint dirt, sand, grass, rock, snow;
 
 Model* boat;
+Model* island;
+Model* mill;
+Model* buoy;
+Model* tree;
 
 int main() {
 	
@@ -100,17 +105,17 @@ int main() {
 		return res;
 	}
 
-	stbi_set_flip_vertically_on_load(true);
+	//stbi_set_flip_vertically_on_load(true);
 
 
 	createShaders();
 	createTGeometry(boxVAO, boxSize, boxIndexCount);
 
-	terrainVAO = GeneratePlane("textures/heightmap2.png", heightmapTexture, GL_RGBA, 4, 100.0f, 5.0f, terrainIndexCount, heightmapID);
-	heightNormalID = loadTexture("textures/heightnormal.png");
+	//terrainVAO = GeneratePlane("textures/heightmap2.png", heightmapTexture, GL_RGBA, 4, 100.0f, 5.0f, terrainIndexCount, heightmapID);
+	//heightNormalID = loadTexture("textures/heightnormal.png");
 
-	GLuint boxTex = loadTexture("textures./container2.png");
-	GLuint boxNormal = loadTexture("textures./container2_normal.png");
+	boxTex = loadTexture("textures/waterColor.png");
+	boxNormal = loadTexture("textures/emptyNormal.png");
 
 	dirt = loadTexture("textures/dirt.jpg");
 	sand = loadTexture("textures/sand.jpg");
@@ -118,7 +123,11 @@ int main() {
 	rock = loadTexture("textures/rock.jpg");
 	snow = loadTexture("textures/snow.jpg");
 
-	boat = new Model("models/backpack/backpack.obj");
+	boat = new Model("models/boat/boat.obj");
+	island = new Model("models/island/island.obj");
+	buoy = new Model("models/buoy/buoy.obj");
+	mill = new Model("models/mill/mill.obj");
+	tree = new Model("models/tree/tree.obj");
 
 	// Enable depth testing
 	glEnable(GL_DEPTH_TEST);
@@ -130,10 +139,6 @@ int main() {
 	//Matrices!
 
 	glm::mat4 world = glm::mat4(1.0f);
-	world = glm::rotate(world, glm::radians(45.0f), glm::vec3(0, 1, 0));
-	world = glm::scale(world, glm::vec3(1, 1, 1));
-	world = glm::translate(world, glm::vec3(0, 0, 0));
-
 	view = glm::lookAt(cameraPosition, glm::vec3(0, 0, 0), glm::vec3(0, 1, 0)); 
 	projection = glm::perspective(glm::radians(45.0f), WIDTH / (float)HEIGHT, 0.1f, 5000.0f);
 
@@ -167,14 +172,19 @@ int main() {
 		glClearColor(0.0f, 0.0f, 0.0f, 0.0f); 
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 
-		//glUseProgram(simpleProgram); 
+		glUseProgram(simpleProgram); 
 	
 		renderSkyBox();
-		renderTerrain();
+		//renderTerrain();
 
 		float t = glfwGetTime();
 
-		renderModel(boat, glm::vec3(100,100,100), glm::vec3(0, 0, 0), glm::vec3(100, 100, 100));
+		renderModel(boat, glm::vec3(0,-2.5f,-10), glm::vec3(0, glm::radians(90.0f), 0), glm::vec3(10, 10, 10));
+		renderModel(island, glm::vec3(0,0,0), glm::vec3(0, 0, 0), glm::vec3(10, 10, 10));
+		renderModel(buoy, glm::vec3(-35,-3,-10), glm::vec3(0, 0, 0), glm::vec3(10, 10, 10));
+		renderModel(mill, glm::vec3(0,-1,50), glm::vec3(0, glm::radians(180.0f), 0), glm::vec3(10, 10, 10));
+		renderModel(tree, glm::vec3(-20,-2,20), glm::vec3(0, 0, 0), glm::vec3(10, 10, 10));
+		renderBox(glm::vec3(0, -103, 0), glm::vec3(0, 0, 0), glm::vec3(10000, 200, 10000));
 		 
 		//buffers swappen
 		glfwSwapBuffers(window); 
@@ -186,6 +196,37 @@ int main() {
 
 	glfwTerminate();
 	return 0;
+}
+
+void renderBox(glm::vec3 pos, glm::vec3 rot, glm::vec3 scale) {
+
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+
+	glm::mat4 world = glm::mat4(1.0f);
+	world = glm::translate(world, pos);
+	world = world * glm::toMat4(glm::quat(rot));
+	world = glm::scale(world, scale);
+
+	glUseProgram(simpleProgram);
+
+	glUniformMatrix4fv(glGetUniformLocation(simpleProgram, "world"), 1, GL_FALSE, glm::value_ptr(world)); 
+	glUniformMatrix4fv(glGetUniformLocation(simpleProgram, "view"), 1, GL_FALSE, glm::value_ptr(view)); 
+	glUniformMatrix4fv(glGetUniformLocation(simpleProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection)); 
+	 
+	glUniform3fv(glGetUniformLocation(simpleProgram, "lightDirection"), 1, glm::value_ptr(lightDirection));
+	glUniform3fv(glGetUniformLocation(simpleProgram, "cameraPosition"), 1, glm::value_ptr(cameraPosition)); 
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, boxTex);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, boxNormal);
+
+	glBindVertexArray(boxVAO);
+	//glDrawArrays(GL_TRIANGLES, 0, triangleSize);
+	glDrawElements(GL_TRIANGLES, boxIndexCount, GL_UNSIGNED_INT, 0);
+
+	glDisable(GL_BLEND);
 }
 
 void renderSkyBox() {
@@ -200,6 +241,9 @@ void renderSkyBox() {
 	glm::mat4 world = glm::mat4(1.0f);
 	world = glm::translate(world, cameraPosition);
 	world = glm::scale(world, glm::vec3(100, 100, 100));
+
+	float t = glfwGetTime() * 0.2f; 
+	lightDirection = glm::normalize(glm::vec3(glm::sin(t), -0.5f, glm::cos(t)));
 
 	glUniformMatrix4fv(glGetUniformLocation(skyProgram, "world"), 1, GL_FALSE, glm::value_ptr(world));
 	glUniformMatrix4fv(glGetUniformLocation(skyProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
@@ -232,8 +276,7 @@ void renderTerrain() {
 	glUniformMatrix4fv(glGetUniformLocation(terrainProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
 	glUniformMatrix4fv(glGetUniformLocation(terrainProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 
-	//float t = glfwGetTime(); 
-	//lightDirection = glm::normalize(glm::vec3(glm::sin(t), -0.5f, glm::cos(t)));
+
 	glUniform3fv(glGetUniformLocation(terrainProgram, "lightDirection"), 1, glm::value_ptr(lightDirection));
 	glUniform3fv(glGetUniformLocation(terrainProgram, "cameraPosition"), 1, glm::value_ptr(cameraPosition));
 
@@ -365,22 +408,32 @@ void processInput(GLFWwindow* window) {
 		glfwSetWindowShouldClose(window, true);
 	}
 
+	float moveSpeed = 0.1f;
+
 	bool camChanged = false;
 
 	if (keys[GLFW_KEY_W]) {
-		cameraPosition += camQuat * glm::vec3(0, 0, 1);
+		cameraPosition += camQuat * glm::vec3(0, 0, 1) * moveSpeed;
 		camChanged = true;
 	}
 	if (keys[GLFW_KEY_S]) {
-		cameraPosition += camQuat * glm::vec3(0, 0, -1);
+		cameraPosition += camQuat * glm::vec3(0, 0, -1) * moveSpeed;
 		camChanged = true;
 	}
 	if (keys[GLFW_KEY_A]) {
-		cameraPosition += camQuat * glm::vec3(1, 0, 0);
+		cameraPosition += camQuat * glm::vec3(1, 0, 0) * moveSpeed;
 		camChanged = true;
 	}
 	if (keys[GLFW_KEY_D]) {
-		cameraPosition += camQuat * glm::vec3(-1, 0, 0);
+		cameraPosition += camQuat * glm::vec3(-1, 0, 0) * moveSpeed;
+		camChanged = true;
+	}
+	if (keys[GLFW_KEY_SPACE]) {
+		cameraPosition += camQuat * glm::vec3(0, 1, 0) * moveSpeed;
+		camChanged = true;
+	}
+	if (keys[GLFW_KEY_LEFT_CONTROL]) {
+		cameraPosition += camQuat * glm::vec3(0, -1, 0) * moveSpeed;
 		camChanged = true;
 	}
 
@@ -408,6 +461,7 @@ int init(GLFWwindow*&window) {
 		glfwTerminate();
 		return-1;
 	}
+
 
 	//register callbacks
 	glfwSetCursorPosCallback(window, mouse_callback);
@@ -438,8 +492,8 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos){
 	lastX = x;
 	lastY = y;
 
-	camYaw -= dx;
-	camPitch = glm::clamp(camPitch + dy, -90.0f, 90.0f);
+	camYaw -= dx * 0.2f;
+	camPitch = glm::clamp(camPitch + dy * 0.2f, -90.0f, 90.0f);
 
 	if (camYaw > 180.0f) {
 		camYaw -= 360.0f;
